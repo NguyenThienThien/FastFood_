@@ -18,7 +18,7 @@ router.get('/get-products', async (req, res) => {
             })
         }
     } catch (error) {
-        
+        console.log(error);
     }
 })
 
