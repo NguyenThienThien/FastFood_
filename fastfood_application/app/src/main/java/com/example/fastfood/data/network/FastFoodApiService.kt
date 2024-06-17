@@ -8,15 +8,15 @@ import retrofit2.http.Path
 
 interface FastFoodApiService {
     //===========GET===========
-    @GET("/get-productTypes")
-    suspend fun getProductTypes(): Response<List<ProductTypeResponse>>
+    @GET("get-productTypes")
+    suspend fun getListProductTypes(): Response<List<ProductTypeResponse>>
 
-    @GET("/get-products")
-    suspend fun getProducts(): Response<List<ProductResponse>>
+    @GET("get-products")
+    suspend fun getListProducts(): Response<List<ProductResponse>>
 
-    @GET("/get-productsById/{id}")
+    @GET("get-productsById/{id}")
     suspend fun getDetailsProduct(@Path("id") id: String): Response<ProductResponse>
 
-    @GET("/get-productsByTypeId/{productTypeId}")
+    @GET("get-productsByTypeId/{productTypeId}")
     suspend fun getProductsByType(@Path("productTypeId") productTypeId: String): Response<List<ProductResponse>>
 }
