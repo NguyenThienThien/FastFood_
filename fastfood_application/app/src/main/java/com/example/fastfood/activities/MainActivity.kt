@@ -13,10 +13,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.fastfood.navigation.AppNavigation
 import com.example.fastfood.navigation.ScreenNavigation
 import com.example.fastfood.ui.theme.FastFoodTheme
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         setContent {
             ScreenNavigation()
         }

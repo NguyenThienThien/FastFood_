@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fastfood.activities.LoginPage
+import com.example.fastfood.activities.MainLoginSignUp
+import com.example.fastfood.activities.SignUpPage
 
 @Composable
 fun ScreenNavigation(){
@@ -11,8 +14,11 @@ fun ScreenNavigation(){
 
     NavHost(
         navController = navController,
-        startDestination = "TabNav"
+        startDestination = "MainLoginSignUp"
     ) {
-        composable(ScreensList.MainBottomNav.route){ AppNavigation(navigationController = navController)}
+        composable(ScreensList.MainBottomNav.route){ AppNavigation(navigationController = navController) }
+        composable(ScreensList.MainLoginSignUp.route){ MainLoginSignUp(navController = navController) }
+        composable(ScreensList.LoginScreen.route){ LoginPage(navController = navController) }
+        composable(ScreensList.SignUpScreen.route){ SignUpPage(navController = navController,  onSignUpSuccess = ({ Unit })) }
     }
 }
