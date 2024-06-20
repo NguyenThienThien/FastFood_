@@ -274,7 +274,7 @@ fun SignUpPage(navController: NavController, onSignUpSuccess: () -> Unit) {
                                             }
                                         }
                                 } else {
-                                    Toast.makeText(context, "Sign Up Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Email already exists", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
