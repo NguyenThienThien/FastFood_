@@ -18,5 +18,6 @@ fun ScreenNavigation(){
     ) {
         composable(ScreensList.MainBottomNav.route){ AppNavigation(navigationController = navController) }
         composable(ScreensList.MainLoginSignUp.route){ MainLoginSignUp(navController = navController) }
+        composable(ScreensList.LoginScreen.route){ LoginPage(navController = navController, onSignUp = ({Unit})) }
     }
 }

@@ -77,10 +77,6 @@ fun MainLoginSignUp(navController: NavController){
                 .padding(top = 270.dp)
                 .background(Color.White)
         ) {
-
-            val tabs = listOf("Login", "Sign Up")
-            val coroutineScope = rememberCoroutineScope()
-
             Scaffold(
                 topBar = {
                     TabRow(selectedTabIndex = selectedTabIndex, contentColor = Color(0xFFEC2578)) {
@@ -95,7 +91,7 @@ fun MainLoginSignUp(navController: NavController){
             ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {
                     when (selectedTabIndex) {
-                        0 -> LoginPage(navController)
+                        0 -> LoginPage(navController, onSignUp = { selectedTabIndex = 1 })
                         1 -> SignUpPage(navController,onSignUpSuccess = { selectedTabIndex = 0 })
                     }
                 }
