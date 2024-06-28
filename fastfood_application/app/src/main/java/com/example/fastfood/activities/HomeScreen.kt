@@ -1,5 +1,6 @@
 package com.example.fastfood.activities
 
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,22 +39,38 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.fastfood.R
+import com.example.fastfood.activities.components.ItemProduct
+import com.example.fastfood.activities.components.ItemProduct2
+import com.example.fastfood.activities.components.ItemTypes
 import com.example.fastfood.data.models.Product
 import com.example.fastfood.data.models.ProductType
 import com.example.fastfood.data.models.productResponseToProduct
 import com.example.fastfood.data.models.productTypeResponseToProductType
 import com.example.fastfood.ui.theme.OpenSans
+import com.example.fastfood.utils.createPartFromDouble
+import com.example.fastfood.utils.createPartFromInt
+import com.example.fastfood.utils.createPartFromString
 import com.example.fastfood.utils.formatCurrency
+import com.example.fastfood.utils.prepareFilePart
+import com.example.fastfood.viewModel.CartViewModel
 import com.example.fastfood.viewModel.ProductTypesViewModel
 import com.example.fastfood.viewModel.ProductViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     productTypeViewModel: ProductTypesViewModel = viewModel(),
-    productViewModel: ProductViewModel = viewModel()
+    productViewModel: ProductViewModel = viewModel(),
+    cartViewModel: CartViewModel = viewModel()
 ) {
     val textFindState = remember { mutableStateOf("") }
     val images = listOf(
@@ -110,7 +128,8 @@ fun HomeScreen(
 
             ListProducts(
                 product = listProducts.map { productResponseToProduct(it) },
-                selectedProductTypeId = selectedProductTypeId
+                selectedProductTypeId = selectedProductTypeId,
+                viewModel = cartViewModel
             )
         }
     }
@@ -224,7 +243,7 @@ fun BannerCarousel(images: List<Int>, listState: LazyListState, currentItem: Int
 }
 
 @Composable
-fun ListProducts(product: List<Product>, selectedProductTypeId: String?) {
+fun ListProducts(product: List<Product>, selectedProductTypeId: String?, viewModel: CartViewModel) {
     val isExpanded = remember { mutableStateOf(false) }
 
     Spacer(modifier = Modifier.padding(5.dp))
@@ -235,7 +254,7 @@ fun ListProducts(product: List<Product>, selectedProductTypeId: String?) {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(product.filter { it.productTypeId == selectedProductTypeId }) { products ->
-                ItemProduct(product = products)
+                ItemProduct(product = products, viewModel = viewModel)
             }
         }
 
@@ -254,9 +273,10 @@ fun ListProducts(product: List<Product>, selectedProductTypeId: String?) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            val productsToDisplay = if (isExpanded.value) product else product.distinctBy { it.productTypeId }
+            val productsToDisplay =
+                if (isExpanded.value) product else product.distinctBy { it.productTypeId }
             items(productsToDisplay) { product ->
-                ItemProduct2(product = product)
+                ItemProduct2(product = product, viewModel = viewModel)
             }
 
             if (!isExpanded.value) {
@@ -278,168 +298,6 @@ fun ListProducts(product: List<Product>, selectedProductTypeId: String?) {
             }
         }
     }
-}
-
-@Composable
-fun ItemProduct(product: Product) {
-    Box(
-        modifier = Modifier
-            .width(180.dp)
-            .height(155.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(Color.White)
-            .border(width = 1.dp, Color(0xFFe7f0f7))
-            .shadow(elevation = 1.dp)
-    ) {
-        Column {
-            // Product image
-            AsyncImage(
-                model = product.imageProduct[0],
-                contentDescription = null,
-                modifier = Modifier
-                    .height(80.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.padding(3.dp))
-
-            // Product name
-            Text(
-                text = product.nameProduct,
-                fontFamily = OpenSans,
-                fontSize = 16.sp,
-                fontWeight = FontWeight(500),
-                modifier = Modifier.padding(start = 10.dp),
-                textAlign = TextAlign.Center,
-            )
-
-            // Product price
-            Text(
-                text = formatCurrency(product.priceProduct),
-                fontFamily = OpenSans,
-                fontSize = 14.sp,
-                fontWeight = FontWeight(600),
-                modifier = Modifier.padding(start = 10.dp),
-                textAlign = TextAlign.Center,
-                color = Color(0xFFEC2578)
-            )
-        }
-
-        // Add to cart button
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(11.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            Column(
-                modifier = Modifier
-                    .height(28.dp)
-                    .width(28.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFFEC2578)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                IconButton(
-                    onClick = { /*TODO: Add to cart action*/ }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-    }
-
-    Spacer(modifier = Modifier.padding(5.dp))
-}
-
-@Composable
-fun ItemProduct2(product: Product) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(Color.White)
-            .border(width = 1.dp, Color(0xFFe7f0f7))
-            .shadow(elevation = 1.dp)
-            .padding(10.dp),
-    ) {
-        // Product image
-        AsyncImage(
-            model = product.imageProduct[0],
-            contentDescription = null,
-            modifier = Modifier
-                .height(70.dp)
-                .width(90.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        // Product name
-        Text(
-            text = product.nameProduct,
-            fontFamily = OpenSans,
-            fontSize = 18.sp,
-            fontWeight = FontWeight(500),
-            modifier = Modifier
-                .padding(start = 10.dp)
-                .align(Alignment.CenterVertically),
-            textAlign = TextAlign.Center,
-        )
-
-        // Product price and Add to cart button
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Product price
-            Text(
-                text = formatCurrency(product.priceProduct),
-                fontFamily = OpenSans,
-                fontSize = 20.sp,
-                fontWeight = FontWeight(600),
-                modifier = Modifier.padding(start = 10.dp),
-                textAlign = TextAlign.Center,
-                color = Color(0xFFEC2578)
-            )
-
-            // Add to cart button
-            Column(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(Color(0xFFF05B99))
-                    .height(21.dp)
-                    .width(70.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                IconButton(
-                    onClick = { /*TODO: Add to cart action*/ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Add to cart",
-                        fontFamily = OpenSans,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight(500),
-                        textAlign = TextAlign.Center,
-                        color = Color.White
-                    )
-                }
-            }
-        }
-    }
-
-    Spacer(modifier = Modifier.padding(5.dp))
 }
 
 @Composable
@@ -466,53 +324,3 @@ fun ListProductType(productType: List<ProductType>, onProductTypeSelected: (Stri
         }
     }
 }
-
-@Composable
-fun ItemTypes(
-    productType: ProductType,
-    isSelected: Boolean,
-    onItemSelected: (String) -> Unit
-) {
-
-    val backgroundColor = if (isSelected) Color(0xFFF14E89) else Color.Transparent
-    val contentColor = if (isSelected) Color.White else Color.Black
-
-    Row(
-        modifier = Modifier
-            .width(150.dp)
-            .height(43.dp)
-            .background(backgroundColor, RoundedCornerShape(8.dp))
-            .border(1.dp, Color(0xFFF14E89), RoundedCornerShape(8.dp))
-            .padding(10.dp)
-            .clickable {
-                // Gọi hàm callback khi ItemTypes được click
-                onItemSelected(productType.id)
-            },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AsyncImage(
-            model = productType.imageProductType,
-            contentDescription = null,
-            modifier = Modifier
-                .width(24.dp)
-                .height(24.dp)
-                .clip(RoundedCornerShape(50.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        Text(
-            text = productType.typeName,
-            fontFamily = OpenSans,
-            fontSize = 16.sp,
-            fontWeight = FontWeight(500),
-            modifier = Modifier
-                .weight(1f),
-            textAlign = TextAlign.Center,
-            color = contentColor
-        )
-    }
-
-    Spacer(modifier = Modifier.padding(5.dp))
-}
-
-
