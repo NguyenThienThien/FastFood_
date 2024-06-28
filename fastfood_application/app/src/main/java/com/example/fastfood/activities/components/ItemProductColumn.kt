@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.fastfood.data.models.Product
 import com.example.fastfood.ui.theme.OpenSans
+import com.example.fastfood.utils.SharePrefsUtil
 import com.example.fastfood.utils.formatCurrency
 import com.example.fastfood.viewModel.CartViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +40,7 @@ fun ItemProduct2(product: Product, viewModel: CartViewModel) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val userId = SharePrefsUtil.getUserId(context)
 
     Row(
         modifier = Modifier
@@ -102,7 +104,7 @@ fun ItemProduct2(product: Product, viewModel: CartViewModel) {
                 IconButton(
                     onClick = {
                         viewModel.addToCart(
-                            userId = "user_id",
+                            userId = userId!!,
                             productId = product.id,
                             nameProduct = product.nameProduct,
                             priceProduct = product.priceProduct,

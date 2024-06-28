@@ -61,6 +61,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -90,7 +93,6 @@ dependencies {
     //ViewModel vs Room
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.1")
-    implementation ("androidx.room:room-ktx:2.6.1")
     //
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     // đăng nhập bằng google
