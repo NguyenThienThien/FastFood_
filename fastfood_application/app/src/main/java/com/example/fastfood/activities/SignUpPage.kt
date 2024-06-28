@@ -225,27 +225,27 @@ fun SignUpPage(navController: NavController, onSignUpSuccess: () -> Unit) {
                 when {
                     emailState.value.isEmpty() -> {
                         emailFocusRequester.requestFocus()
-                        Toast.makeText(context, "Email is required", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Vui lòng không để trống email", Toast.LENGTH_SHORT).show()
                     }
                     !emailState.value.matches(emailPattern.toRegex()) -> {
                         emailFocusRequester.requestFocus()
-                        Toast.makeText(context, "Invalid email format", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Email không đúng định dạng", Toast.LENGTH_SHORT).show()
                     }
                     passwordState.value.isEmpty() -> {
                         passwordFocusRequester.requestFocus()
-                        Toast.makeText(context, "Password is required", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Vui lòng không để trống mật khẩu", Toast.LENGTH_SHORT).show()
                     }
                     passwordState.value.length < 8 -> {
                         passwordFocusRequester.requestFocus()
-                        Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Mật khẩu phải có trên 8 ký tự", Toast.LENGTH_SHORT).show()
                     }
                     rePasswordState.value.isEmpty() -> {
                         rePasswordFocusRequester.requestFocus()
-                        Toast.makeText(context, "RePassword is required", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Vui lòng nhập lại mật khẩu", Toast.LENGTH_SHORT).show()
                     }
                     passwordState.value != rePasswordState.value -> {
                         rePasswordFocusRequester.requestFocus()
-                        Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Mật khẩu và nhập lại mật khẩu không trùng khớp", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         auth.createUserWithEmailAndPassword(emailState.value, passwordState.value)
@@ -267,14 +267,14 @@ fun SignUpPage(navController: NavController, onSignUpSuccess: () -> Unit) {
                                     userRef.child("Users").child(userId).setValue(userMap)
                                         .addOnCompleteListener { dbTask ->
                                             if (dbTask.isSuccessful){
-                                                Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
                                                 onSignUpSuccess()
                                             }else{
                                                 Toast.makeText(context, "Database Error: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
                                             }
                                         }
                                 } else {
-                                    Toast.makeText(context, "Email already exists", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Tài khoản email đã tồn tại", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
