@@ -8,6 +8,8 @@ const product = new Scheme({
     imageProduct: {type: [String]},
     describeProduct: {type: String},
     statusProduct: {type: Number},
+    rate: {type: Number},
+    sold: {type: Number}
 }, {
     timestamps: true
 })

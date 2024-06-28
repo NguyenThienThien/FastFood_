@@ -6,20 +6,24 @@ data class Product(
     val id: String,
     val nameProduct: String,
     val productTypeId: String,
-    val priceProduct: String,
+    val priceProduct: Double,
     val imageProduct: List<String>,
     val describeProduct: String,
-    val statusProduct: String
+    val statusProduct: String,
+    val rate: Float,
+    val sold: Int
 )
 
 data class ProductResponse(
     @SerializedName("_id") val id: String,
     @SerializedName("nameProduct") val nameProduct: String,
     @SerializedName("productTypeId") val productTypeId: String,
-    @SerializedName("priceProduct") val priceProduct: String,
+    @SerializedName("priceProduct") val priceProduct: Double,
     @SerializedName("imageProduct") val imageProduct: List<String>,
     @SerializedName("describeProduct") val describeProduct: String,
-    @SerializedName("statusProduct") val statusProduct: String
+    @SerializedName("statusProduct") val statusProduct: String,
+    @SerializedName("rate") val rate: Float,
+    @SerializedName("sold") val sold: Int,
 )
 
 fun productResponseToProduct(response: ProductResponse) : Product {
@@ -31,5 +35,7 @@ fun productResponseToProduct(response: ProductResponse) : Product {
         imageProduct = response.imageProduct,
         describeProduct = response.describeProduct,
         statusProduct = response.statusProduct,
+        rate = response.rate,
+        sold = response.sold,
     )
 }
