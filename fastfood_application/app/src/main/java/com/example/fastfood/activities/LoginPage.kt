@@ -58,6 +58,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,19 +216,15 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
                 when {
                     emailState.value.isEmpty() -> {
                         emailFocusRequester.requestFocus()
-                        Toast.makeText(context, "Email is required", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Vui lòng không để trống email", Toast.LENGTH_SHORT).show()
                     }
                     !emailState.value.matches(emailPattern.toRegex()) -> {
                         emailFocusRequester.requestFocus()
-                        Toast.makeText(context, "Invalid email format", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "email không đúng định dạng", Toast.LENGTH_SHORT).show()
                     }
                     passwordState.value.isEmpty() -> {
                         passwordFocusRequester.requestFocus()
-                        Toast.makeText(context, "Password is required", Toast.LENGTH_SHORT).show()
-                    }
-                    passwordState.value.length < 8 -> {
-                        passwordFocusRequester.requestFocus()
-                        Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Vui lòng không để trống mật khẩu", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         auth.signInWithEmailAndPassword(emailState.value, passwordState.value)
@@ -235,10 +232,10 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
                                 if(task.isSuccessful){
                                     val userId = auth.currentUser?.uid ?: ""
                                     SharePrefsUtil.saveUserId(context, userId)
-                                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
                                     navController.navigate("TabNav")
                                 }else{
-                                    Toast.makeText(context, "Incorrect email or password", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
