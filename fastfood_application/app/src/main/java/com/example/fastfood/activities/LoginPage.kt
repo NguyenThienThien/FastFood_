@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fastfood.R
+import com.example.fastfood.utils.SharePrefsUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -232,6 +233,8 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
                         auth.signInWithEmailAndPassword(emailState.value, passwordState.value)
                             .addOnCompleteListener { task ->
                                 if(task.isSuccessful){
+                                    val userId = auth.currentUser?.uid ?: ""
+                                    SharePrefsUtil.saveUserId(context, userId)
                                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
                                     navController.navigate("TabNav")
                                 }else{
