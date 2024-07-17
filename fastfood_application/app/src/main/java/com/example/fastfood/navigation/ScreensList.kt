@@ -5,4 +5,6 @@ enum class ScreensList(val route: String) {
     MainLoginSignUp("MainLoginSignUp"),
     LoginScreen("LoginScreen"),
     SignUpScreen("SignUpScreen"),
+    WelcomeScreen("WelcomeScreen"),
+    DetailOrderScreen("DetailOrderScreen"),
 }

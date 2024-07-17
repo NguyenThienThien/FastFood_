@@ -246,7 +246,7 @@ fun BannerCarousel(images: List<Int>, listState: LazyListState, currentItem: Int
 fun ListProducts(product: List<Product>, selectedProductTypeId: String?, viewModel: CartViewModel) {
     val isExpanded = remember { mutableStateOf(false) }
 
-    Spacer(modifier = Modifier.padding(5.dp))
+    Spacer(modifier = Modifier.padding(1.dp))
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -258,7 +258,7 @@ fun ListProducts(product: List<Product>, selectedProductTypeId: String?, viewMod
             }
         }
 
-        Spacer(modifier = Modifier.padding(5.dp))
+        Spacer(modifier = Modifier.padding(4.dp))
 
         Text(
             text = "Popular Menu",

@@ -76,49 +76,99 @@ router.get('/get-productTypes', async (req, res) => {
 // ====================Cart api=========================
 router.get('/get-cartByUserId', async (req, res) => {
     try {
-        const { user_id } = req.params
-        const data = await cart.find({ user_id: user_id })
-        if(data){
-            res.status(200).send(data)
-        }else{
+        const user_id = req.query.user_id; // Lấy user_id từ query string
+
+        // Thực hiện truy vấn và in kết quả
+        const data = await cart.find({ user_id: user_id });    
+
+        if (data.length > 0) {
+            res.status(200).send(data);
+        } else {
             res.json({
                 "status": 400,
                 "messenger": "Get Cart failed",
                 "data": []
-            })
+            });
         }
     } catch (error) {
         console.log(error);
+        res.status(500).json({
+            "status": 500,
+            "messenger": "Server error",
+            "data": []
+        });
     }
-})
+});
+
+router.get('/get-quantity/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const cartItem = await cart.findById(id);
+
+        if (cartItem) {
+            res.status(200).json({
+                "status": 200,
+                "message": "Get quantity success",
+                "data": { quantity_cart: cartItem.quantity_cart }
+            });
+        } else {
+            res.status(404).json({
+                "status": 404,
+                "message": "Cart item not found",
+                "data": []
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            "status": 500,
+            "message": "Server error",
+            "data": []
+        });
+    }
+});
 
 router.post('/add-cart', async (req,res) => {
     try {
         const data = req.body
+        const existingCart = await cart.findOne({ user_id: data.user_id, product_id: data.product_id})
 
-        const newCart = new cart({
-            user_id: data.user_id,
-            product_id: data.product_id,
-            nameProduct: data.nameProduct,
-            priceProduct: data.priceProduct,
-            imageProduct: data.imageProduct,
-            quantity_cart: data.quantity_cart
-        })
-
-        const result = await newCart.save()
-
-        if(result){
+        if(existingCart){
+            existingCart.quantity_cart += data.quantity_cart
+            const updatedCart = await existingCart.save()
             res.json({
                 "status": 200,
-                "messenger": "Add Cart success",
-                "data": result
+                "messenger": "Update Cart success",
+                "data": updatedCart
             })
         }else{
-            res.json({
-                "status": 400,
-                "messenger": "Add Cart failed",
-                "data": []
+            const newCart = new cart({
+                user_id: data.user_id,
+                product_id: data.product_id,
+                nameProduct: data.nameProduct,
+                priceProduct: data.priceProduct,
+                imageProduct: data.imageProduct,
+                quantity_cart: data.quantity_cart,
+                rate: data.rate,
+                sold: data.sold
             })
+    
+            const result = await newCart.save()
+    
+            if(result){
+                res.json({
+                    "status": 200,
+                    "messenger": "Add Cart success",
+                    "data": result
+                })
+            }else{
+                res.json({
+                    "status": 400,
+                    "messenger": "Add Cart failed",
+                    "data": []
+                })
+            }
         }
     } catch (error) {
         console.log(error);
@@ -128,31 +178,6 @@ router.post('/add-cart', async (req,res) => {
 router.delete('/delete-cartById/:id', async (req, res) => {
     try {
         const { id } = req.params
-
-        const cartItem = await cart.findById(id)
-        if(!cartItem){
-            return res.status(404).json({
-                "status": 404,
-                "message": "Cart not found",
-                "data": []
-            })
-        }
-
-        const imageUrls = cartItem.imageProduct
-        imageUrls.forEach(async (url) => {
-            try {
-                const filename = url.split('/').pop();
-                const filePath = path.join(__dirname, '..', 'public', 'uploads', filename)
-                if(fs.existsSync(filePath)){
-                    fs.unlinkSync(filePath)
-                    console.log(`Deleted file: ${filename}`);
-                }else{
-                    console.log(`File not found: ${filename}`);
-                }
-            } catch (error) {
-                console.error(`Error deleting file: ${error.message}`);
-            }
-        })
 
         const result = await cart.findByIdAndDelete(id)
         if(result){
@@ -218,31 +243,45 @@ router.delete('/delete-all-cartsByUserId/:user_id', async (req, res) => {
     }
 })
 
-router.put('/update-cartQuantity/:cart-id', async (req,res) => {
+router.put('/update-quantity/:id', async (req, res) => {
     try {
-        const { cart_id } = req.params
-        const { quantity } = req.body
+        const { id } = req.params;
+        const { quantity_cart } = req.body;
 
-        const cartItem = await cart.findById(cart_id)
-        if(!cartItem){
-            return res.status(404).json({
-                "status": 404,
-                "message": "Cart not found",
+        if (!quantity_cart && quantity_cart !== 0) {
+            return res.status(400).json({
+                "status": 400,
+                "message": "quantity_cart is required",
                 "data": []
-            })
+            });
         }
 
-        cartItem.quantity_cart = quantity
-        await cartItem.save()
+        const cartItem = await cart.findById(id);
+        if (!cartItem) {
+            return res.status(404).json({
+                "status": 404,
+                "message": "Cart item not found",
+                "data": []
+            });
+        }
+
+        cartItem.quantity_cart = quantity_cart;
+        const updatedCartItem = await cartItem.save();
 
         res.json({
             "status": 200,
-            "messenger": "Update Cart success",
-            "data": cartItem
-        })
+            "message": "Update quantity success",
+            "data": updatedCartItem
+        });
     } catch (error) {
         console.log(error);
+        res.status(500).json({
+            "status": 500,
+            "message": "Server error",
+            "data": []
+        });
     }
-})
+});
+
 
 module.exports = router;

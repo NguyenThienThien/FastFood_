@@ -53,10 +53,8 @@ fun ItemProduct(product: Product, viewModel: CartViewModel) {
         modifier = Modifier
             .width(180.dp)
             .height(155.dp)
-            .clip(RoundedCornerShape(15.dp))
+            .shadow(elevation = 3.dp, RoundedCornerShape(10.dp))
             .background(Color.White)
-            .border(width = 1.dp, Color(0xFFe7f0f7))
-            .shadow(elevation = 1.dp)
     ) {
         Column {
             // Product image
@@ -117,7 +115,9 @@ fun ItemProduct(product: Product, viewModel: CartViewModel) {
                             nameProduct = product.nameProduct,
                             priceProduct = product.priceProduct,
                             imageProduct = product.imageProduct,
-                            quantity = 1
+                            quantity = 1,
+                            rate = product.rate,
+                            sold = product.sold
                         ) { success ->
                             coroutineScope.launch {
                                 if (success) {

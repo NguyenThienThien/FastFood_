@@ -46,8 +46,8 @@ fun ItemProduct2(product: Product, viewModel: CartViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
+            .shadow(elevation = 3.dp, RoundedCornerShape(10.dp))
             .background(Color.White)
-            .shadow(elevation = 1.dp)
             .padding(10.dp),
     ) {
         // Product image
@@ -85,7 +85,7 @@ fun ItemProduct2(product: Product, viewModel: CartViewModel) {
                 text = formatCurrency(product.priceProduct),
                 fontFamily = OpenSans,
                 fontSize = 20.sp,
-                fontWeight = FontWeight(600),
+                fontWeight = FontWeight(500),
                 modifier = Modifier.padding(start = 10.dp),
                 textAlign = TextAlign.Center,
                 color = Color(0xFFEC2578)
@@ -109,7 +109,9 @@ fun ItemProduct2(product: Product, viewModel: CartViewModel) {
                             nameProduct = product.nameProduct,
                             priceProduct = product.priceProduct,
                             imageProduct = product.imageProduct,
-                            quantity = 1
+                            quantity = 1,
+                            rate = product.rate,
+                            sold = product.sold
                         ) { success ->
                             coroutineScope.launch {
                                 if (success) {
@@ -134,7 +136,7 @@ fun ItemProduct2(product: Product, viewModel: CartViewModel) {
                         text = "Add to cart",
                         fontFamily = OpenSans,
                         fontSize = 10.sp,
-                        fontWeight = FontWeight(500),
+                        fontWeight = FontWeight(600),
                         textAlign = TextAlign.Center,
                         color = Color.White
                     )

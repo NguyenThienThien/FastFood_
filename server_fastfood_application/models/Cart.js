@@ -7,7 +7,9 @@ const cart = new Scheme({
     nameProduct: {type: String},
     priceProduct: {type: Number},
     imageProduct: {type: [String]},
-    quantity_cart: {type: Number}
+    quantity_cart: {type: Number},
+    rate: {type: Number},
+    sold: {type: Number}
 }, {
     timestamps: true
 })
