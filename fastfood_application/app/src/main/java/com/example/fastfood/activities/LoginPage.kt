@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fastfood.R
+import com.example.fastfood.utils.LoginUtils
 import com.example.fastfood.utils.SharePrefsUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -79,25 +80,6 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
 
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
-
-    // đăng nhập bằng google
-//    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//        .requestIdToken(context.getString(R.string.default_web_client_id))
-//        .requestEmail()
-//        .build()
-//
-//    val googleSignInClient: GoogleSignInClient = GoogleSignIn.getClient(context, gso)
-//    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-//        try {
-//            val account = task.getResult(ApiException::class.java)!!
-//            firebaseAuthWithGoogle(account.idToken!!, auth, context, navController)
-//        } catch (e: ApiException) {
-//            Log.w("LoginPage", "Google sign-in failed", e)
-//        }
-//    }
-
-
 
     Column(
         modifier = Modifier
@@ -233,6 +215,7 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
                                     val userId = auth.currentUser?.uid ?: ""
                                     SharePrefsUtil.saveUserId(context, userId)
                                     Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                                    LoginUtils.saveLoginState(context, true)
                                     navController.navigate("TabNav")
                                 }else{
                                     Toast.makeText(context, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()
@@ -302,9 +285,6 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
                 contentDescription = null,
                 modifier = Modifier
                     .size(35.dp)
-                    .clickable {
-//                        launcher.launch(googleSignInClient.signInIntent)
-                    }
             )
         }
 
@@ -327,16 +307,3 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
         )
     }
 }
-
-//private fun firebaseAuthWithGoogle(idToken: String, auth: FirebaseAuth, context: Context, navController: NavController) {
-//    val credential = GoogleAuthProvider.getCredential(idToken, null)
-//    auth.signInWithCredential(credential)
-//        .addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-//                navController.navigate("TabNav")
-//            } else {
-//                Toast.makeText(context, "Đăng nhập Google thất bại", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//}
