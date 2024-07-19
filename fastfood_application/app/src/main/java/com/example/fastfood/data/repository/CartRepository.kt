@@ -22,4 +22,5 @@ class CartRepository(private val apiService: FastFoodApiService) {
     suspend fun deleteCartItem(cartId: String): Response<StatusResponse> {
         return apiService.deleteCart(cartId)
     }
+
 }

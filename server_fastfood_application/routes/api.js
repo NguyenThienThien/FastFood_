@@ -4,9 +4,13 @@ var path = require('path')
 var express = require('express');
 var router = express.Router();
 
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
 var product = require('../models/Product')
 var productType = require('../models/ProductType')
 var cart = require('../models/Cart')
+var Order = require('../models/Order')
 var upload = require('../config/common/upload')
 
 // ====================Product api=========================
@@ -282,6 +286,87 @@ router.put('/update-quantity/:id', async (req, res) => {
         });
     }
 });
+
+// ====================Order api=========================
+
+router.get('/get-orderByUserId', async (req, res) => {
+    try {
+        const user_id = req.query.user_id; // Lấy user_id từ query string
+
+        // Thực hiện truy vấn và in kết quả
+        const data = await Order.find({ user_id: user_id });    
+
+        if (data.length > 0) {
+            res.status(200).send(data);
+        } else {
+            res.json({
+                "status": 400,
+                "messenger": "Get order failed",
+                "data": []
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            "status": 500,
+            "messenger": "Server error",
+            "data": []
+        });
+    }
+});
+
+router.post('/add-order', async (req, res) => {
+    try {
+        const data = req.body;
+
+        // Log dữ liệu nhận được từ phía client
+        // console.log('Request payload:', JSON.stringify(data, null, 2));
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!data.userId || !data.orderItems || !data.totalAmount || data.statusOrder === undefined || !data.dateOrder || !data.timeOrder) {
+            return res.status(400).json({
+                status: 400,
+                message: "Thiếu dữ liệu đầu vào",
+                data: []
+            });
+        }
+
+        // Tạo đối tượng Order mới
+        const newOrder = new Order({
+            userId: data.userId,
+            orderItems: data.orderItems,
+            totalAmount: data.totalAmount,
+            statusOrder: data.statusOrder,
+            dateOrder: data.dateOrder,
+            timeOrder: data.timeOrder
+        });
+
+        // Lưu đối tượng Order vào MongoDB
+        const result = await newOrder.save();
+
+        if (result) {
+            res.json({
+                status: 200,
+                message: "Thêm đơn hàng thành công",
+                data: result
+            });
+        } else {
+            res.status(400).json({
+                status: 400,
+                message: "Thêm đơn hàng thất bại",
+                data: []
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            status: 500,
+            message: "Lỗi server",
+            data: []
+        });
+    }
+});
+
 
 
 module.exports = router;

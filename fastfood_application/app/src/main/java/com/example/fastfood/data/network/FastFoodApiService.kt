@@ -1,6 +1,7 @@
 package com.example.fastfood.data.network
 
 import com.example.fastfood.data.models.Cart
+import com.example.fastfood.data.models.Order
 import com.example.fastfood.data.models.ProductResponse
 import com.example.fastfood.data.models.ProductTypeResponse
 import com.example.fastfood.data.models.QuantityRequest
@@ -33,9 +34,15 @@ interface FastFoodApiService {
     @GET("get-cartByUserId")
     suspend fun getCartByUserId(@Query("user_id") userId: String): Response<List<Cart>>
 
+    @GET("get-orderByUserId")
+    suspend fun getOrderByUserId(@Query("user_id") userId: String): Response<List<Order>>
+
     //===========POST===========
     @POST("add-cart")
     suspend fun addCart(@Body cart: Cart): Response<StatusResponse>
+
+    @POST("add-order")
+    suspend fun addOrder(@Body order: Order): Response<StatusResponse>
 
     //===========PUT===========
     @PUT("update-quantity/{id}")
@@ -47,5 +54,8 @@ interface FastFoodApiService {
     //===========DELETE===========
     @DELETE("delete-cartById/{id}")
     suspend fun deleteCart(@Path("id") id: String): Response<StatusResponse>
+
+    @DELETE("delete-all-cartsByUserId/{user_id}")
+    suspend fun deleteAllCartsByUserId(@Path("user_id") userId: String): Response<StatusResponse>
 
 }

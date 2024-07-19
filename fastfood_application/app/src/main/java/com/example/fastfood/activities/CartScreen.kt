@@ -1,6 +1,7 @@
 package com.example.fastfood.activities
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -80,16 +81,12 @@ fun CartScreen(navController: NavController, cartViewModel: CartViewModel = view
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-
-            Text(
-                text = "My cart",
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = OpenSans,
-            )
-
-
+        Text(
+            text = "My cart",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = OpenSans,
+        )
         Spacer(modifier = Modifier.padding(5.dp))
 
         Column(
@@ -142,7 +139,11 @@ fun CartScreen(navController: NavController, cartViewModel: CartViewModel = view
 
                 Button(
                     onClick = {
-                              navController.navigate("DetailOrderScreen")
+                        if (cartItems.isEmpty()) {
+                            Toast.makeText(context, "Bạn đang không có sản phẩm nào", Toast.LENGTH_SHORT).show()
+                        } else {
+                            navController.navigate("DetailOrderScreen")
+                        }
                     },
                     modifier = Modifier
                         .fillMaxHeight()
