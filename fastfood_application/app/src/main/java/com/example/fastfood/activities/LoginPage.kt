@@ -187,7 +187,7 @@ fun LoginPage(navController: NavController, onSignUp: () -> Unit) {
         Text(
             text = "Forget Password?",
             color = Color(0xFFEC2578),
-            modifier = Modifier.align(Alignment.End),
+            modifier = Modifier.align(Alignment.End).clickable { navController.navigate("ForgetPasswordScreen") },
             fontWeight = FontWeight(600)
         )
 
