@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.fastfood.ForgetPassword
+import com.example.fastfood.activities.ForgetPassword
 import com.example.fastfood.activities.DetailsOrder
 import com.example.fastfood.activities.LoginPage
 import com.example.fastfood.activities.MainLoginSignUp
